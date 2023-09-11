@@ -27,6 +27,7 @@ extension IntExt on int {
   }
 }
 
+
 extension DoubleExt on double {
   String toComma() {
     return decimalFormat.format(this);

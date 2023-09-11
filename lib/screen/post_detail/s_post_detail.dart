@@ -27,6 +27,7 @@ class PostDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productPost = ref.watch(productPostProvider(id));
+
     return productPost.when(
         data: (data) => _PostDetail(
               simpleProductPost ?? data.simpleProductPost,
@@ -169,13 +170,10 @@ class _ImagePager extends StatelessWidget {
           PageView(
             controller: pageController,
             children: simpleProductPost.product.images
-                .map((url) => Hero(
-                      tag: '${simpleProductPost.id}_$url',
-                      child: CachedNetworkImage(
-                        imageUrl: url,
-                        fit: BoxFit.fill,
-                      ),
-                    ))
+                .map((url) => CachedNetworkImage(
+                  imageUrl: url,
+                  fit: BoxFit.fill,
+                ))
                 .toList(),
           ),
           if (simpleProductPost.product.images.length > 1)

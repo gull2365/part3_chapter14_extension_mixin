@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/entity/post/vo_simple_product_post.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../post_detail/s_post_detail.dart';
 
@@ -18,7 +17,6 @@ class ProductPostItem extends StatelessWidget {
         Nav.push(
             PostDetailScreen(
               post.id,
-              simpleProductPost: post,
             ),
             durationMs: 800);
       },
@@ -29,12 +27,9 @@ class ProductPostItem extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Hero(
-                  tag: '${post.id}_${post.product.images[0]}',
-                  child: CachedNetworkImage(
-                    imageUrl: post.product.images[0],
-                    width: 150,
-                  ),
+                child: CachedNetworkImage(
+                  imageUrl: post.product.images[0],
+                  width: 150,
                 ),
               ),
               Width(10),
@@ -42,18 +37,14 @@ class ProductPostItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Hero(tag: '${post.id}_title', child: Material(child: post.title.text.size(17).bold.make())),
+                    Material(child: post.title.text.size(17).bold.make()),
                     Row(
                       children: [
                         post.address.simpleAddress.text
                             .color(context.appColors.lessImportant)
                             .make(),
                         '•'.text.color(context.appColors.lessImportant).make(),
-                        timeago
-                            .format(post.createdTime, locale: context.locale.languageCode)
-                            .text
-                            .color(context.appColors.lessImportant)
-                            .make(),
+                        post.createdTime.timeago.text.color(context.appColors.lessImportant).make(),
                       ],
                     ),
                     post.product.price.toWon().text.bold.make(),
