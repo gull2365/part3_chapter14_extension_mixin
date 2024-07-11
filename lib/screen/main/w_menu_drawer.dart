@@ -1,4 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:fast_app_base/common/theme/custom_theme.dart';
+import 'package:fast_app_base/common/theme/custom_theme_app.dart';
 import 'package:fast_app_base/screen/opensource/s_opensource.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +47,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
               padding: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(5), bottomRight: Radius.circular(5)),
-                  color: context.colors.background),
+                      topRight: Radius.circular(5),
+                      bottomRight: Radius.circular(5)),
+                  color: context.colors.surface),
               child: isSmallScreen(context)
                   ? SingleChildScrollView(
                       child: getMenus(context),
@@ -109,16 +112,24 @@ class _MenuDrawerState extends State<MenuDrawer> {
           isSmallScreen(context) ? const Height(10) : const EmptyExpanded(),
           MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: ModeSwitch(
-              value: context.isDarkMode,
-              onChanged: (value) {
-                ThemeUtil.toggleTheme(context);
+            child: PopupMenuButton<CustomTheme>(
+              onSelected: (value) {
+                setState(() {
+                  context.changeTheme(value);
+                });
               },
-              height: 30,
-              activeThumbImage: Image.asset('$basePath/darkmode/moon.png'),
-              inactiveThumbImage: Image.asset('$basePath/darkmode/sun.png'),
-              activeThumbColor: Colors.transparent,
-              inactiveThumbColor: Colors.transparent,
+              itemBuilder: (BuildContext context) => CustomTheme.values
+                  .map((e) => PopupMenuItem(
+                        value: e,
+                        child: Row(children: [
+                          CircleAvatar(
+                            backgroundColor: e.color,
+                          ),
+                          Text(e.name),
+                        ]),
+                      ))
+                  .toList(),
+              child: Text(context.themeType.name),
             ).pOnly(left: 20),
           ),
           const Height(10),
@@ -146,10 +157,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
     );
   }
 
-  void toggleTheme() {
-    ThemeUtil.toggleTheme(context);
-  }
-
   void closeDrawer(BuildContext context) {
     if (Scaffold.of(context).isDrawerOpen) {
       Scaffold.of(context).closeDrawer();
@@ -174,13 +181,16 @@ class _MenuDrawerState extends State<MenuDrawer> {
                     DropdownButton<String>(
                       items: [
                         menu(currentLanguage),
-                        menu(Language.values.where((element) => element != currentLanguage).first),
+                        menu(Language.values
+                            .where((element) => element != currentLanguage)
+                            .first),
                       ],
                       onChanged: (value) async {
                         if (value == null) {
                           return;
                         }
-                        await context.setLocale(Language.find(value.toLowerCase()).locale);
+                        await context.setLocale(
+                            Language.find(value.toLowerCase()).locale);
                         WidgetsBinding.instance.performReassemble();
                       },
                       value: describeEnum(currentLanguage).capitalizeFirst,
@@ -235,7 +245,8 @@ class _MenuWidget extends StatelessWidget {
   final String text;
   final Function() onTap;
 
-  const _MenuWidget(this.text, {Key? key, required this.onTap}) : super(key: key);
+  const _MenuWidget(this.text, {Key? key, required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
